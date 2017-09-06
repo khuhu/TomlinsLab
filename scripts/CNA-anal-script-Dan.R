@@ -4,12 +4,19 @@ args <- commandArgs(trailingOnly=TRUE);
 
 ###my attempt at testing the script
 
+### using tmp directory for output of CN calls seperated by pool
 args <- c("/home/kevhu/tmp//amplicon.GCinput.txt", "/home/kevhu/tmp//sampleInfo.input.txt", "/home/kevhu/tmp//amplicon.combinedCoverage.input.txt",
           "--min-amplicons-per-gene=3")
 
-#args <- c("/mnt/DATA2/share/@CN_CALLS/yoda/Auto_user_SATProton-135-PM_BL_PR_samples_Komal_317_339/BL-432_DNA/amplicon.GCinput.txt",
-#         "/mnt/DATA2/share/@CN_CALLS/yoda/Auto_user_SATProton-135-PM_BL_PR_samples_Komal_317_339/BL-432_DNA/sampleInfo.input.txt",
-#         "/mnt/DATA2/share/@CN_CALLS/yoda/Auto_user_SATProton-135-PM_BL_PR_samples_Komal_317_339/BL-432_DNA/amplicon.combinedCoverage.input.txt",
+### using tmp2 directory for combined pool anaylsis
+
+args <- c("/home/kevhu/tmp2/amplicon.GCinput.txt", "/home/kevhu/tmp2/sampleInfo.input.txt", "/home/kevhu/tmp2/amplicon.combinedCoverage.input.txt",
+          "--min-amplicons-per-gene=3")
+
+
+#args <- c("/mnt/DATA2/share/@CN_CALLS/yoda/Auto_user_SAT-22-OCP_20131028_53_068/amplicon.GCinput.txt",
+#         "/mnt/DATA2/share/@CN_CALLS/yoda/Auto_user_SAT-22-OCP_20131028_53_068/sampleInfo.input.txt",
+#         "/mnt/DATA2/share/@CN_CALLS/yoda/Auto_user_SAT-22-OCP_20131028_53_068/amplicon.combinedCoverage.input.txt",
 #         "--min-amplicons-per-gene=3")
 
 
@@ -285,6 +292,9 @@ if (normalPool) {
 } else {
   tmpFrac <- df[,poolNames];
   for (poolName in poolNames) {
+    #seems it usually expects more than one samples ... so a quick fix would be to make the data into a df
+    #tmpFrac <- data.frame(tmpFrac, stringsAsFactors = FALSE)
+    #names(tmpFrac) <- poolNames
     tmpFrac[[poolName]] <- tmpFrac[[poolName]] / sum(tmpFrac[[poolName]]);
   }
   df$Weights <- apply(tmpFrac[,poolNames], 1, median);
@@ -406,7 +416,9 @@ for (x in allNames) {
   
 }
 dfPlotValue$GenomeIndex <- seq(1,nrow(dfPlotValue),1)
-write.table(dfPlotValue,"ampLevel.allSamps.plottedValues.txt",quote=FALSE,row.names=FALSE,sep="\t")
+#write.table(dfPlotValue,"ampLevel.allSamps.plottedValues.txt",quote=FALSE,row.names=FALSE,sep="\t")
+write.table(dfPlotValue,"/home/kevhu/tmp/ampLevel.allSamps.plottedValues.txt",quote=FALSE,row.names=FALSE,sep="\t")
+
 
 
 if (length(poolNames)>1) {

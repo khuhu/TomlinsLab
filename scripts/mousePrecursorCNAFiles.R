@@ -28,6 +28,8 @@ for(i in seq_along(barcodes)){
 jsonFile <- fromJSON("./results.json")
 
 
+###making individual tables
+
 for(i in seq_along(barcodes)){
   idxTable <- NULL
   idxTable <- c("SampleName","Barocde","path")
@@ -49,6 +51,31 @@ for(i in seq_along(barcodes)){
 }
 
 
+
+###making one large index file 
+finalTable <- NULL
+finalTable <- c("SampleName","Barocde","path")
+
+
+for(i in seq_along(barcodes)){
+  idxTable <- NULL
+  sampleName <- jsonFile$barcodes[[i]]$`Sample Name`
+  path <- paste(directory, "/",barcodes[i], "/",sep = "")
+  setwd(path)
+  ampliCovFile <- system('find . -name "*.amplicon.cov.xls" | grep IonXpress',intern = TRUE)
+  ampliCovFile <- sub("./","",ampliCovFile)
+  ampliCovFile <- paste(path, ampliCovFile, sep = "")
+  combined <- c(sampleName, barcodes[i], ampliCovFile)
+  finalTable <- rbind(finalTable, combined)
+}
+
+rownames(finalTable) <- NULL
+colnames(finalTable) <- NULL
+setwd("/home/kevhu/data/")
+finalTable <- finalTable[-1,]
+
+write.table(x = finalTable, file = "/home/kevhu/data/choAllTumorIdx.txt",
+            sep = '\t',row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 
 
